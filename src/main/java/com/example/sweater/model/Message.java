@@ -34,6 +34,6 @@ public class Message {
     }
 
     public String getAuthorName() {
-        return author != null ? author.getUsername() : "<отсутствует>";
+        return author != null ? author.getUsername() : "Автор отсутствует";
     }
 }
