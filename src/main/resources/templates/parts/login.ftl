@@ -1,5 +1,5 @@
 <#macro login path isRegisterForm>
-    <form th:action="${path}" method="post">
+    <form action="${path}" method="post">
         <div class="form-group">
             <label for="exampleInputEmail1"> Имя пользователя:
                 <input type="text" name="username" class="form-control" placeholder="Введите имя">
@@ -10,6 +10,13 @@
                 <input type="password" name="password" class="form-control" placeholder="Введите пароль"/>
             </label>
         </div>
+        <#if isRegisterForm>
+            <div class="form-group">
+                <label> Электронная почта:
+                    <input type="email" name="email" class="form-control" placeholder="Введите email"/>
+                </label>
+            </div>
+        </#if>
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
         <#if !isRegisterForm>
             <a href="/registration">Зарегистрироваться</a>
