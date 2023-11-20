@@ -2,18 +2,51 @@
     <form action="${path}" method="post">
         <div class="form-group">
             <label for="exampleInputEmail1"> Имя пользователя:
-                <input type="text" name="username" class="form-control" placeholder="Введите имя">
+                <input type="text" name="username" value="<#if user??>${user.username}</#if>"
+                       class="form-control ${(usernameError??)?string('is-invalid', '')}"
+                       placeholder="Введите имя">
+                <#if usernameError??>
+                    <div class="invalid-feedback">
+                        ${usernameError}
+                    </div>
+                </#if>
             </label>
         </div>
         <div class="form-group">
             <label> Пароль:
-                <input type="password" name="password" class="form-control" placeholder="Введите пароль"/>
+                <input type="password" name="password"
+                       class="form-control ${(passwordError??)?string('is-invalid', '')}"
+                       placeholder="Введите пароль"/>
+                <#if passwordError??>
+                    <div class="invalid-feedback">
+                        ${passwordError}
+                    </div>
+                </#if>
             </label>
         </div>
         <#if isRegisterForm>
             <div class="form-group">
+                <label> Пароль:
+                    <input type="password" name="password2"
+                           class="form-control ${(password2Error??)?string('is-invalid', '')}"
+                           placeholder="Подтвердите пароль"/>
+                    <#if password2Error??>
+                        <div class="invalid-feedback">
+                            ${password2Error}
+                        </div>
+                    </#if>
+                </label>
+            </div>
+            <div class="form-group">
                 <label> Электронная почта:
-                    <input type="email" name="email" class="form-control" placeholder="Введите email"/>
+                    <input type="email" name="email" value="<#if user??>${user.email}</#if>"
+                           class="form-control ${(emailError??)?string('is-invalid', '')}"
+                           placeholder="Введите email"/>
+                    <#if emailError??>
+                        <div class="invalid-feedback">
+                            ${emailError}
+                        </div>
+                    </#if>
                 </label>
             </div>
         </#if>
