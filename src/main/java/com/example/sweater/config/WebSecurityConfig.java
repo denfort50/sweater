@@ -38,7 +38,9 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated())
                 .formLogin((form) -> form
                         .loginPage("/login").permitAll())
-                .logout(LogoutConfigurer::permitAll);
+                .rememberMe()
+                .and()
+                    .logout(LogoutConfigurer::permitAll);
         return http.build();
     }
 

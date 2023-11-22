@@ -50,6 +50,14 @@
                 </label>
             </div>
         </#if>
+        <div class="form-group">
+            <div class="g-recaptcha" data-sitekey="6Lez1hUpAAAAACUliJMjFe9_2GuEME0tor8BWumS"></div>
+            <#if captchaError??>
+                <div class="alert alert-danger" role="alert">
+                    ${captchaError}
+                </div>
+            </#if>
+        </div>
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
         <#if !isRegisterForm>
             <a href="/registration">Зарегистрироваться</a>
