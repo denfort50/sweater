@@ -13,9 +13,14 @@
             <li class="nav-item">
                 <a class="nav-link" href="/">Домашняя страница <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/main">Сообщения <span class="sr-only">(current)</span></a>
-            </li>
+            <#if user??>
+                <li class="nav-item">
+                    <a class="nav-link" href="/main">Сообщения <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user-messages/${currentUserId}">Мои сообщения <span class="sr-only">(current)</span></a>
+                </li>
+            </#if>
             <#if isAdmin>
                 <li class="nav-item">
                     <a class="nav-link" href="/user">Список пользователей <span class="sr-only">(current)</span></a>
