@@ -32,7 +32,7 @@
                 </li>
             </#if>
         </ul>
-        <div class="navbar-text mr-3">${name}</div>
+        <div class="navbar-text mr-3"><#if user??>${name}<#else>Пожалуйста, авторизуйтесь</#if></div>
         <@l.logout />
     </div>
 </nav>
