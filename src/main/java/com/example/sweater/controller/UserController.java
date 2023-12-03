@@ -36,7 +36,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public String userSave(@RequestParam String username, @RequestParam Map<String,String> form,
+    public String userSave(@RequestParam String username, @RequestParam Map<String, String> form,
             @RequestParam("userId") User user) {
         userService.saveUser(user, username, form);
         return "redirect:/user";
