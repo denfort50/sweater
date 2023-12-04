@@ -34,12 +34,14 @@ public class MainController {
     private String uploadPath;
 
     @GetMapping("/")
-    public String greeting(Model model) {
+    public String greeting(@AuthenticationPrincipal User currentUser, Model model) {
+        model.addAttribute("user", currentUser);
         return "greeting";
     }
 
     @GetMapping("/main")
-    public String main(@RequestParam(required = false) String filter, Model model) {
+    public String main(@AuthenticationPrincipal User currentUser,
+                       @RequestParam(required = false) String filter, Model model) {
         Iterable<Message> messages;
         if (filter != null && !filter.isEmpty()) {
             messages = messageRepository.findByTag(filter);
@@ -48,6 +50,7 @@ public class MainController {
         }
         model.addAttribute("messages", messages);
         model.addAttribute("filter", filter);
+        model.addAttribute("user", currentUser);
         return "main";
     }
 
@@ -67,6 +70,7 @@ public class MainController {
         }
         Iterable<Message> messages = messageRepository.findAll();
         model.addAttribute("messages", messages);
+        model.addAttribute("user", user);
         return "main";
     }
 
