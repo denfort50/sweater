@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CaptchaResponse {
+public class CaptchaResponseDto {
 
     private boolean success;
 

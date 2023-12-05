@@ -1,6 +1,6 @@
 package com.example.sweater.controller;
 
-import com.example.sweater.dto.CaptchaResponse;
+import com.example.sweater.dto.CaptchaResponseDto;
 import com.example.sweater.model.User;
 import com.example.sweater.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class RegistrationController {
                           @RequestParam("g-recaptcha-response") String captchaResponse,
                           @Valid User user, BindingResult bindingResult, Model model) {
         String url = String.format(CAPTCHA_URL, secret, captchaResponse);
-        CaptchaResponse response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponse.class);
+        CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
         if (!Objects.requireNonNull(response).isSuccess()) {
             model.addAttribute("captchaError", "Заполните капчу");
         }
