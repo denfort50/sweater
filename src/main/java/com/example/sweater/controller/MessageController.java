@@ -2,7 +2,7 @@ package com.example.sweater.controller;
 
 import com.example.sweater.model.Message;
 import com.example.sweater.model.User;
-import com.example.sweater.repository.MessageRepository;
+import com.example.sweater.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,10 +28,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Controller
-public class MainController {
+public class MessageController {
 
     @Autowired
-    private MessageRepository messageRepository;
+    private MessageService messageService;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -46,12 +46,8 @@ public class MainController {
     public String main(@AuthenticationPrincipal User currentUser,
                        @RequestParam(required = false) String filter, Model model,
                        @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Message> page;
-        if (filter != null && !filter.isEmpty()) {
-            page = messageRepository.findByTag(filter, pageable);
-        } else {
-            page = messageRepository.findAll(pageable);
-        }
+        Page<Message> page = messageService.messageList(filter, pageable);
+
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("filter", filter);
@@ -73,28 +69,28 @@ public class MainController {
         } else {
             saveFile(message, file);
             model.addAttribute("message", null);
-            messageRepository.save(message);
+            messageService.save(message);
         }
-        Page<Message> page = messageRepository.findAll(pageable);
+        Page<Message> page = messageService.findAll(pageable);
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("user", user);
         return "main";
     }
 
-    @GetMapping("/user-messages/{user}")
+    @GetMapping("/user-messages/{author}")
     public String userMessages(@AuthenticationPrincipal User currentUser,
-                               @PathVariable User user, Model model,
+                               @PathVariable User author, Model model,
                                @RequestParam(required = false) Message message,
                                @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Message> page = messageRepository.findAllByAuthor(user, pageable);
-        model.addAttribute("userChannel", user);
-        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
-        model.addAttribute("subscribersCount", user.getSubscribers().size());
-        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
+        Page<Message> page = messageService.messageListForUser(pageable, author);
+        model.addAttribute("userChannel", author);
+        model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
+        model.addAttribute("subscribersCount", author.getSubscribers().size());
+        model.addAttribute("isSubscriber", author.getSubscribers().contains(currentUser));
         model.addAttribute("page", page);
         model.addAttribute("message", message);
-        model.addAttribute("isCurrentUser", currentUser.equals(user));
+        model.addAttribute("isCurrentUser", currentUser.equals(author));
         model.addAttribute("url", "/user-messages/{user}");
         return "parts/userMessages";
     }
@@ -114,7 +110,7 @@ public class MainController {
                 message.setTag(tag);
 
             }
-            messageRepository.save(message);
+            messageService.save(message);
             saveFile(message, file);
         }
         return "redirect:/user-messages/" + user;

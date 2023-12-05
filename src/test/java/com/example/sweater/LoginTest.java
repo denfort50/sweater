@@ -1,6 +1,6 @@
 package com.example.sweater;
 
-import com.example.sweater.controller.MainController;
+import com.example.sweater.controller.MessageController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,7 +25,7 @@ public class LoginTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private MainController mainController;
+    private MessageController messageController;
 
     @Test
     public void contextLoads() throws Exception {
