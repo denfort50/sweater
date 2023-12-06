@@ -21,10 +21,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Контроллер для работы с процессом регистрации пользователей
+ *
+ * @author Denis Kalchenko
+ */
 @Controller
 public class RegistrationController {
-
-    private static final String CAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s";
 
     @Autowired
     private UserService userService;
@@ -32,20 +35,39 @@ public class RegistrationController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Value("${recaptcha.url}")
+    private String captchaUrl;
+
     @Value("${recaptcha.secret}")
     private String secret;
 
+    /**
+     * Метод для обработки запроса на показ web-формы с регистрацией
+     *
+     * @return страницу регистрации
+     */
     @GetMapping("/registration")
     public String registration() {
         return "registration";
     }
 
+    /**
+     * Метод для обработки запроса на регистрацию пользователя
+     *
+     * @param passwordConfirmation подтвержденный пароль
+     * @param captchaResponse      код капчи
+     * @param user                 новый пользователь
+     * @param bindingResult        объект для проверки ошибок
+     * @param model                модель
+     * @return страницу авторизации
+     */
     @PostMapping("/registration")
     public String addUser(@RequestParam("password2") String passwordConfirmation,
                           @RequestParam("g-recaptcha-response") String captchaResponse,
                           @Valid User user, BindingResult bindingResult, Model model) {
-        String url = String.format(CAPTCHA_URL, secret, captchaResponse);
-        CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
+        String url = String.format(captchaUrl, secret, captchaResponse);
+        CaptchaResponseDto response = restTemplate
+                .postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
         if (!Objects.requireNonNull(response).isSuccess()) {
             model.addAttribute("captchaError", "Заполните капчу");
         }
@@ -68,6 +90,13 @@ public class RegistrationController {
         return "redirect:/login";
     }
 
+    /**
+     * Метод выводит информацию о статусе активации пользователя
+     *
+     * @param model модель
+     * @param code  код активации
+     * @return страницу авторизации
+     */
     @GetMapping("/activate/{code}")
     public String activate(Model model, @PathVariable String code) {
         boolean isActivated = userService.activateUser(code);

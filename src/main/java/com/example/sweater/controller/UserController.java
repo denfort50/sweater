@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * Контроллер для работы с процессом авторизации пользователей
+ *
+ * @author Denis Kalchenko
+ */
 @Controller
 @RequestMapping("/user")
 public class UserController {
@@ -19,6 +24,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Метод для обработки запроса на показ списка пользователей
+     *
+     * @param currentUser текущий авторизованный пользователь
+     * @param model       модель
+     * @return страницу со списком пользователей
+     */
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public String userList(@AuthenticationPrincipal User currentUser, Model model) {
@@ -27,6 +39,13 @@ public class UserController {
         return "userList";
     }
 
+    /**
+     * Метод для обработки запроса на показ страницы с формой редактирования прав пользователя
+     *
+     * @param user  пользователь
+     * @param model модель
+     * @return страницу с формой редактирования прав пользователя
+     */
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("{user}")
     public String userEditForm(@PathVariable User user, Model model) {
@@ -35,14 +54,29 @@ public class UserController {
         return "userEdit";
     }
 
+    /**
+     * Метод для обработки запроса на изменение прав пользователя
+     *
+     * @param username имя пользователя
+     * @param form     перечень прав
+     * @param user     пользователь
+     * @return страницу со списком пользователей
+     */
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public String userSave(@RequestParam String username, @RequestParam Map<String, String> form,
-            @RequestParam("userId") User user) {
+                           @RequestParam("userId") User user) {
         userService.saveUser(user, username, form);
         return "redirect:/user";
     }
 
+    /**
+     * Метод для обработки запроса на показ страницы с формой редактирования профиля
+     *
+     * @param model модель
+     * @param user  пользователь
+     * @return страницу с формой редактирования профиля
+     */
     @GetMapping("profile")
     public String getProfile(Model model, @AuthenticationPrincipal User user) {
         model.addAttribute("username", user.getUsername());
@@ -51,6 +85,14 @@ public class UserController {
         return "profile";
     }
 
+    /**
+     * Метод для обработки запроса на изменение данных профиля
+     *
+     * @param user     пользователь
+     * @param password пароль
+     * @param email    почта
+     * @return страницу с формой редактирования профиля
+     */
     @PostMapping("profile")
     public String updateProfile(@AuthenticationPrincipal User user,
                                 @RequestParam String password,
@@ -59,6 +101,13 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
+    /**
+     * Метод для обработки запроса подписки на пользователя
+     *
+     * @param currentUser текущий авторизованный пользователь
+     * @param user        пользователь, на кого подписываемся
+     * @return страницу с сообщениями конкретного пользователя
+     */
     @GetMapping("subscribe/{user}")
     public String subscribe(@AuthenticationPrincipal User currentUser,
                             @PathVariable User user) {
@@ -66,13 +115,28 @@ public class UserController {
         return "redirect:/user-messages/" + user.getId();
     }
 
+    /**
+     * Метод для обработки запроса отписки от пользователя
+     *
+     * @param currentUser текущий авторизованный пользователь
+     * @param user        пользователь, от кого отписываемся
+     * @return страницу с сообщениями конкретного пользователя
+     */
     @GetMapping("unsubscribe/{user}")
     public String unsubscribe(@AuthenticationPrincipal User currentUser,
-                            @PathVariable User user) {
+                              @PathVariable User user) {
         userService.unsubscribe(currentUser, user);
         return "redirect:/user-messages/" + user.getId();
     }
 
+    /**
+     * Метод для обработки запроса на показ страницы с подписками и подписчиками конкретного пользователя
+     *
+     * @param user  пользователь
+     * @param type  тип: подписки / подписчики
+     * @param model модель
+     * @return страницу с подписками / подписчиками
+     */
     @GetMapping("{type}/{user}/list")
     public String userList(@PathVariable User user, @PathVariable String type, Model model) {
         model.addAttribute("userChannel", user);
