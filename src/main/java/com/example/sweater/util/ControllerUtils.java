@@ -1,4 +1,4 @@
-package com.example.sweater.controller;
+package com.example.sweater.util;
 
 import org.springframework.validation.BindingResult;
 
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class ControllerUtils {
 
-    static Map<String, String> getErrors(BindingResult bindingResult) {
+    public static Map<String, String> getErrors(BindingResult bindingResult) {
         return bindingResult.getFieldErrors().stream().collect(Collectors.toMap(
                 fieldError -> fieldError.getField() + "Error", fieldError -> {
                     String defaultMessage = fieldError.getDefaultMessage();

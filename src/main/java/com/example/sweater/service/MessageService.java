@@ -1,5 +1,6 @@
 package com.example.sweater.service;
 
+import com.example.sweater.dto.MessageDto;
 import com.example.sweater.model.Message;
 import com.example.sweater.model.User;
 import com.example.sweater.repository.MessageRepository;
@@ -14,11 +15,11 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public Page<Message> messageList(String filter, Pageable pageable) {
+    public Page<MessageDto> messageList(String filter, Pageable pageable, User user) {
         if (filter != null && !filter.isEmpty()) {
-            return messageRepository.findByTag(filter, pageable);
+            return messageRepository.findByTag(filter, pageable, user);
         } else {
-            return messageRepository.findAll(pageable);
+            return messageRepository.findAll(pageable, user);
         }
     }
 
@@ -26,11 +27,11 @@ public class MessageService {
         messageRepository.save(message);
     }
 
-    public Page<Message> findAll(Pageable pageable) {
-        return messageRepository.findAll(pageable);
+    public Page<MessageDto> findAll(Pageable pageable, User user) {
+        return messageRepository.findAll(pageable, user);
     }
 
-    public Page<Message> messageListForUser(Pageable pageable, User author) {
-        return messageRepository.findByUser(pageable, author);
+    public Page<MessageDto> messageListForUser(Pageable pageable, User author, User user) {
+        return messageRepository.findByUser(pageable, author, user);
     }
 }

@@ -1,8 +1,10 @@
 package com.example.sweater.controller;
 
+import com.example.sweater.dto.MessageDto;
 import com.example.sweater.model.Message;
 import com.example.sweater.model.User;
 import com.example.sweater.service.MessageService;
+import com.example.sweater.util.ControllerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -14,17 +16,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Controller
@@ -46,7 +49,7 @@ public class MessageController {
     public String main(@AuthenticationPrincipal User currentUser,
                        @RequestParam(required = false) String filter, Model model,
                        @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Message> page = messageService.messageList(filter, pageable);
+        Page<MessageDto> page = messageService.messageList(filter, pageable, currentUser);
 
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
@@ -71,7 +74,7 @@ public class MessageController {
             model.addAttribute("message", null);
             messageService.save(message);
         }
-        Page<Message> page = messageService.findAll(pageable);
+        Page<MessageDto> page = messageService.findAll(pageable, user);
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("user", user);
@@ -83,7 +86,7 @@ public class MessageController {
                                @PathVariable User author, Model model,
                                @RequestParam(required = false) Message message,
                                @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Message> page = messageService.messageListForUser(pageable, author);
+        Page<MessageDto> page = messageService.messageListForUser(pageable, author, currentUser);
         model.addAttribute("userChannel", author);
         model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
         model.addAttribute("subscribersCount", author.getSubscribers().size());
@@ -114,6 +117,22 @@ public class MessageController {
             saveFile(message, file);
         }
         return "redirect:/user-messages/" + user;
+    }
+
+    @GetMapping("messages/{message}/like")
+    public String like(@AuthenticationPrincipal User currentUser, @PathVariable Message message,
+                       RedirectAttributes redirectAttributes, @RequestHeader(required = false) String referer) {
+        Set<User> likes = message.getLikes();
+
+        if (likes.contains(currentUser)) {
+            likes.remove(currentUser);
+        } else {
+            likes.add(currentUser);
+        }
+
+        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(referer).build();
+        uriComponents.getQueryParams().forEach(redirectAttributes::addAttribute);
+        return "redirect:" + uriComponents.getPath();
     }
 
     private void saveFile(Message message, MultipartFile file) throws IOException {
