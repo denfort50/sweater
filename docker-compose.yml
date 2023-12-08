@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    container_name: db
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=sweater
+      - GDATA=/var/lib/postgresql/data
+    volumes:
+      - ./db/sweater/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sweater
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/sweater
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    ports:
+      - "127.0.0.1:80:8080"
+    depends_on:
+      - db
