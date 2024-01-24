@@ -31,6 +31,9 @@
 
 ## Инструкция по запуску проекта
 1) Клонировать проект `git clone https://github.com/denfort50/sweater`
+2) В файле `application.properties` указать параметры **spring.mail.host**, **spring.mail.port**, 
+**spring.mail.username** и **spring.mail.password** для работы почтового сервера, а также указать **recaptcha.url** и
+**recaptcha.secret** для работы капчи
 2) Перейти в папку с проектом `cd sweater`
 3) Запустить сборку и запуск контейнеров `docker-compose up`
 4) Перейти на `localhost` в браузере
