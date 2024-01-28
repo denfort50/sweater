@@ -137,6 +137,7 @@ public class MessageController {
         model.addAttribute("message", message);
         model.addAttribute("isCurrentUser", currentUser.equals(author));
         model.addAttribute("url", "/user-messages/{user}");
+        model.addAttribute("user", currentUser);
         return "parts/userMessages";
     }
 
@@ -154,7 +155,7 @@ public class MessageController {
      */
     @PostMapping("/user-messages/{user}")
     public String updateMessage(@AuthenticationPrincipal User currentUser,
-                                @PathVariable Long user,
+                                @PathVariable Long user, Model model,
                                 @RequestParam(name = "id", required = false) Message message,
                                 @RequestParam("text") String text,
                                 @RequestParam("tag") String tag,
@@ -169,6 +170,7 @@ public class MessageController {
             }
             messageService.save(message);
             saveFile(message, file);
+            model.addAttribute("user", currentUser);
         }
         return "redirect:/user-messages/" + user;
     }
